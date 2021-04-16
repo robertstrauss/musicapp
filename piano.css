@@ -1,0 +1,36 @@
+
+.piano {
+    width: 100%;
+    height: 100%;
+    overflow-x: scroll;
+    display: flex;
+    flex-direction: row;
+}
+
+.key {
+    --keywidth: 70px;
+    --keyheight: 300px;
+    flex: 0 0 auto;
+    border: 1px solid grey;
+    border-radius: 3px;
+}
+.whitekey {
+    width: var(--keywidth);
+    height: var(--keyheight);
+    background-color: white;
+}
+
+.blackkey {
+    --width: calc(0.5*var(--keywidth));
+    width: var(--width);
+    height: calc(0.7*var(--keyheight));
+    /* height: 70%; */
+    border: 1px solid grey;
+    border-radius: 3px;
+    background-color: black;
+
+    position: relative;
+    top: 0px;
+    margin-left: calc(-1*0.5*var(--width));
+    margin-right: calc(-1*0.5*var(--width));
+}
