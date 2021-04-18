@@ -24,9 +24,9 @@ class Piano {
 
     constructor(element) {
         // create element
-        var piano = document.createElement('div');
-        element.append(piano);
-        piano.classList.add('piano');
+        this.pianoElem = document.createElement('div');
+        element.append(this.pianoElem);
+        this.pianoElem.classList.add('piano');
 
         // add stylesheet
         document.head.innerHTML += '<link rel="stylesheet" type="text/css" href="piano.css"/>';
@@ -49,7 +49,7 @@ class Piano {
         // add keys
         for ( let i = -40; i < 48; i++ ) {
             let note = document.createElement('div');
-            piano.append(note);
+            this.pianoElem.append(note);
             note.classList.add('key');
 
             // determine if it is black or white key by if it is in C Major scale
@@ -73,12 +73,12 @@ class Piano {
                 note.id = "middlec";
             }
         }
-        // scroll to middle of piano
-        piano.scrollLeft = document.getElementById('middlec').offsetLeft - 200;
+        // scroll to middle of pianoElem
+        this.pianoElem.scrollLeft = document.getElementById('middlec').offsetLeft - 200;
 
         // add scrolling
-        piano.addEventListener('mousewheel', function (event) {
-            piano.scrollLeft += event.deltaY;
+        this.pianoElem.addEventListener('mousewheel', function (event) {
+            this.scrollLeft += event.deltaY;
         });
 
 
@@ -116,6 +116,19 @@ class Piano {
                 gain.gain.value = gain.gain.value * 0.92;
             }
         }, 10);
+    }
+
+
+    /**
+     * 
+     * @param {int} distFromC4 - should be an integer number of half steps (can be negative) the note is from Middle C
+     */
+    getKeyElem(distFromC4) {
+        var keys = this.pianoElem.querySelectorAll('.key');
+        var c4index = Array.prototype.indexOf.call(keys,
+                            this.pianoElem.querySelector('#middlec'));
+
+        return keys[c4index+distFromC4];
     }
 
 

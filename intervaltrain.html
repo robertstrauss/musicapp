@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+</head>
+
+<body>
+
+    <h1>Music App</h1>
+
+    <form id="optionsform">
+
+        tempo: <select id="temposelect">
+            <option value="25">Grave</option>
+            <option value="40">Largo</option>
+            <option value="76" selected>Andante</option>
+            <option value="108">Moderato</option>
+            <option value="120">Allegro</option>
+            <option value="168">Presto</option>
+        </select>
+
+        <br>
+
+        Intervals:<br>
+        <input type="checkbox" class="intervalcheckbox" value="0" checked>Unison</form></input><br>
+        <input type="checkbox" class="intervalcheckbox" value="1" checked>Minor 2nd</form></input><br>
+        <input type="checkbox" class="intervalcheckbox" value="2" checked>Major 2nd</form></input><br>
+        <input type="checkbox" class="intervalcheckbox" value="3" checked>Minor 3rd</form></input><br>
+        <input type="checkbox" class="intervalcheckbox" value="4" checked>Major 3rd</form></input><br>
+        <input type="checkbox" class="intervalcheckbox" value="5" checked>Perfect 4th</form></input><br>
+        <input type="checkbox" class="intervalcheckbox" value="6" checked>Tritone</form></input><br>
+        <input type="checkbox" class="intervalcheckbox" value="7" checked>Perfect 5th</form></input><br>
+        <input type="checkbox" class="intervalcheckbox" value="8" checked>Minor 6th</form></input><br>
+        <input type="checkbox" class="intervalcheckbox" value="9" checked>Major 6th</form></input><br>
+        <input type="checkbox" class="intervalcheckbox" value="10" checked>Minor 7th</form></input><br>
+        <input type="checkbox" class="intervalcheckbox" value="11" checked>Major 7th</form></input><br>
+        <input type="checkbox" class="intervalcheckbox" value="12" checked>Octave</form></input><br>
+
+        <br>
+
+        <input type="button" value="Start!" onclick="startExercise()"></input>
+    </form>
+
+
+
+    <div id="pianocontainer"></div>
+
+
+    <script src="piano.js"></script>
+
+    <script>
+        var piano = new Piano(document.getElementById('pianocontainer'));
+
+        function startExercise() {
+
+            var intervals = document.querySelectorAll('.intervalcheckbox');
+            intervals = Array.prototype.filter.call(intervals, ch => ch.checked);
+            intervals = Array.prototype.map.call(   intervals, ch => parseInt(ch.value));
+
+            var tempo = parseFloat(document.getElementById('temposelect').value);
+
+            function correct(e) {
+                e.target.animate([
+                    {
+                        background: 'green',
+                    },
+                    {
+                        background: 'unset'
+                    }
+                ], 2000);
+                setInterval(askNext, 1000);
+            }
+            function incorrect(e) {
+                e.target.animate([
+                    {
+                        background: 'red',
+                    },
+                    {
+                        background: 'unset'
+                    }
+                ], 2000);
+            }
+
+            function askNext() {
+                var startkeynum = Math.round(Math.random()*60-30);
+                askInterval(startkeynum, intervals, 60/tempo*1000, correct, incorrect);
+            }
+
+            askNext();
+        }
+
+        function askInterval(startkeynum, intervals, delay, correct, incorrect) {
+            var startkey = piano.getKeyElem(startkeynum);
+
+            var intervalnum = intervals[Math.round(Math.random()*intervals.length)];
+
+            var endkeynum = startkeynum + intervalnum;
+            var endkey = piano.getKeyElem(endkeynum);
+            
+            piano.pianoElem.scrollTo({
+                top: 0,
+                left: startkey.offsetLeft,
+                behavior: 'smooth',
+            });
+
+            startkey.animate([
+                {
+                    background: 'yellow',
+                },
+                {
+                    background: 'unset'
+                }
+            ], delay)
+
+            piano.playNote(startkeynum);
+
+            setTimeout(()=>{
+                piano.playNote(endkeynum);
+
+
+                var wrongkeys = piano.pianoElem.querySelectorAll('.key');
+                wrongkeys.forEach(k => k.addEventListener('click', incorrect));
+                
+                endkey.removeEventListener('click', incorrect);
+                endkey.addEventListener('click', (e)=>{
+                    correct(e);
+                    wrongkeys.forEach(k => k.removeEventListener('click', incorrect));
+                }, {once : true});
+
+            }, delay);
+
+
+        }
+
+    </script>
+
+
+</body>
+
+
+</html>
